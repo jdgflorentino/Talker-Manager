@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const generator = require('generate-password');
 const getAll = require('./middlewares/getAll');
 const getTalkerByID = require('./middlewares/getTalkerByID');
 
@@ -11,6 +12,10 @@ const PORT = '3000';
 
 app.get('/talker', getAll);
 app.get('/talker/:id', getTalkerByID);
+app.post('/login', (_req, res) => {
+  const token = generator.generate({ length: 16, numbers: true });
+  res.status(HTTP_OK_STATUS).json({ token });
+});
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
