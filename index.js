@@ -4,6 +4,13 @@ const generator = require('generate-password');
 const getAll = require('./middlewares/getAll');
 const getTalkerByID = require('./middlewares/getTalkerByID');
 const { emailValidation, passwordValidation } = require('./middlewares/login');
+const { nameValidation,
+  ageValidation,
+  talkValidation,
+  rateValidation,
+  watchedValidation,
+  newtalker, 
+  tokenValidation } = require('./middlewares/talkerValidations');
 
 const app = express();
 app.use(bodyParser.json());
@@ -17,6 +24,13 @@ app.post('/login', emailValidation, passwordValidation, (_req, res) => {
   const token = generator.generate({ length: 16, numbers: true });
   res.status(HTTP_OK_STATUS).json({ token });
 });
+app.post('/talker',
+  tokenValidation,
+  nameValidation,
+  ageValidation,
+  talkValidation,
+  rateValidation,
+  watchedValidation, newtalker);
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {
