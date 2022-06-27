@@ -32,7 +32,7 @@ const talkValidation = async (req, res, next) => {
 
 const rateValidation = async (req, res, next) => {
   const { talk: { rate } } = req.body;
-  if (!rate) {
+  if (typeof (rate) !== 'number') {
     return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
   }
   if (rate < 1 || rate > 5) {
@@ -79,6 +79,23 @@ const tokenValidation = (req, res, next) => {
   next();
 };
 
+const talkerEdited = async (req, res) => {
+  const { id } = req.params;
+  const { name, age, talk: { watchedAt, rate } } = req.body;
+  const data = await readFile('./talker.json');
+  const dataJSON = JSON.parse(data);
+  const talkers = dataJSON.filter((talker) => talker.id !== Number(id));
+  const editedTalker = {
+    id: Number(id),
+    name,
+    age,
+    talk: { watchedAt, rate },
+  };
+  const newList = [...talkers, editedTalker];
+  await writeFile('./talker.json', JSON.stringify(newList));
+  return res.status(200).json(editedTalker);
+};
+
 module.exports = {
   nameValidation,
   ageValidation,
@@ -87,4 +104,5 @@ module.exports = {
   rateValidation,
   watchedValidation,
   newtalker,
+  talkerEdited,
 };
