@@ -11,7 +11,7 @@ const { nameValidation,
   watchedValidation,
   newtalker, 
   tokenValidation, 
-  talkerEdited } = require('./middlewares/talkerValidations');
+  talkerEdited, talkerDeleted } = require('./middlewares/talkerValidations');
 
 const app = express();
 app.use(bodyParser.json());
@@ -40,6 +40,8 @@ app.put('/talker/:id',
   talkValidation,
   rateValidation,
   watchedValidation, talkerEdited);
+
+app.delete('/talker/:id', tokenValidation, talkerDeleted);
 
 // não remova esse endpoint, e para o avaliador funcionar
 app.get('/', (_request, response) => {

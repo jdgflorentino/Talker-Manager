@@ -1,5 +1,7 @@
 const { readFile, writeFile } = require('fs/promises');
 
+const PATH_TALKER = './talker.json';
+
 const nameValidation = async (req, res, next) => {
   const { name } = req.body;
   if (!name) {
@@ -55,7 +57,7 @@ const watchedValidation = async (req, res, next) => {
 
 const newtalker = async (req, res) => {
   const { name, age, talk: { watchedAt, rate } } = req.body;
-  const data = await readFile('./talker.json');
+  const data = await readFile(PATH_TALKER);
   const talkers = JSON.parse(data);
   const newTalker = {
     id: Number(talkers.length + 1),
@@ -64,7 +66,7 @@ const newtalker = async (req, res) => {
     talk: { watchedAt, rate },
   };
   const newList = [...talkers, newTalker];
-  await writeFile('./talker.json', JSON.stringify(newList));
+  await writeFile(PATH_TALKER, JSON.stringify(newList));
   return res.status(201).json(newTalker);
 };
 
@@ -82,7 +84,7 @@ const tokenValidation = (req, res, next) => {
 const talkerEdited = async (req, res) => {
   const { id } = req.params;
   const { name, age, talk: { watchedAt, rate } } = req.body;
-  const data = await readFile('./talker.json');
+  const data = await readFile(PATH_TALKER);
   const dataJSON = JSON.parse(data);
   const talkers = dataJSON.filter((talker) => talker.id !== Number(id));
   const editedTalker = {
@@ -92,8 +94,17 @@ const talkerEdited = async (req, res) => {
     talk: { watchedAt, rate },
   };
   const newList = [...talkers, editedTalker];
-  await writeFile('./talker.json', JSON.stringify(newList));
+  await writeFile(PATH_TALKER, JSON.stringify(newList));
   return res.status(200).json(editedTalker);
+};
+
+const talkerDeleted = async (req, res) => { 
+  const { id } = req.params;
+  const data = await readFile(PATH_TALKER);
+  const dataJSON = JSON.parse(data);
+  const talkers = dataJSON.filter((talker) => talker.id !== Number(id));
+  await writeFile(PATH_TALKER, JSON.stringify(talkers));
+  return res.status(204).end();
 };
 
 module.exports = {
@@ -105,4 +116,5 @@ module.exports = {
   watchedValidation,
   newtalker,
   talkerEdited,
+  talkerDeleted,
 };
